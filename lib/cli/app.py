@@ -239,7 +239,7 @@ class Application(object):
             args = ()
         try:
             returned = self.main(*args)
-        except Exception, e:
+        except Exception as e:
             returned = e
 
         return self.post_run(returned)
@@ -297,19 +297,19 @@ class ArgumentParser(argparse.ArgumentParser):
         if file is None:    # pragma: no cover
             file = self.stdout
         if message:
-            message = unicode(message)
+            message = str(message)
         super(ArgumentParser, self)._print_message(message, file)
 
     def exit(self, status=0, message=None):
         """If *message* is not None, write it to :attr:`stderr` instead of :data:`sys.stderr`."""
         if message:
-            self.stderr.write(unicode(message))
+            self.stderr.write(str(message))
         super(ArgumentParser, self).exit(status, message=None)
 
     def error(self, message):
         """Write *message* to :attr:`stderr` instead of :data:`sys.stderr`."""
         self.print_usage(self.stderr)
-        self.exit(2, u"%s: error: %s\n" % (self.prog, message))
+        self.exit(2, "%s: error: %s\n" % (self.prog, message))
 
 class CommandLineMixin(object):
     """A command line application.
@@ -398,7 +398,7 @@ class CommandLineMixin(object):
             keyword arguments and updated :attr:`params` itself. This is
             now left to the caller.
         """
-        for k, v in vars(newparams).items():
+        for k, v in list(vars(newparams).items()):
             setattr(params, k, v)
 
         return params
@@ -417,7 +417,7 @@ class CommandLineMixin(object):
         """
         try:
             ns = self.argparser.parse_args()
-        except SystemExit, e:
+        except SystemExit as e:
             if self.exit_after_main:
                 raise
             else:

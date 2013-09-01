@@ -29,6 +29,7 @@ import shlex
 
 from shutil import rmtree
 from tempfile import mkdtemp
+import collections
 
 try:
     import unittest2 as unittest
@@ -139,7 +140,7 @@ class AppMixin(object):
         """
         try:
             returned, app = self.runapp(app_cls, cmd, **kwargs)
-        except raises, e:
+        except raises as e:
             return True
         if trim:
             stdout, stderr = trim(stdout), trim(stderr)
@@ -155,7 +156,7 @@ class AppMixin(object):
         """
         try:
             self.runapp(app_cls, cmd, **kwargs)
-        except Abort, e:
+        except Abort as e:
             self.assertEqual(status, e.status)
             return True
 
@@ -205,7 +206,7 @@ class FunctionalTest(unittest.TestCase):
         )
 
         addTypeEqualityFunc = getattr(self, "addTypeEqualityFunc", None)
-        if callable(addTypeEqualityFunc):
+        if isinstance(addTypeEqualityFunc, collections.Callable):
             addTypeEqualityFunc(str, "assertMultiLineEqual")
 
     def tearDown(self):

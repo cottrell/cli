@@ -24,14 +24,14 @@ try:
     import io
     BaseStringIO = io.StringIO
 except (ImportError, AttributeError):
-    import StringIO
-    BaseStringIO = StringIO.StringIO
+    import io
+    BaseStringIO = io.StringIO
 
 
 class StringIO(BaseStringIO):
     
     def write(self, s):
-        BaseStringIO.write(self, unicode(s))
+        BaseStringIO.write(self, str(s))
 
 def trim(string):
     """Trim whitespace from strings.
@@ -46,14 +46,14 @@ def trim(string):
     # and split into a list of lines:
     lines = string.expandtabs().splitlines()
     # Determine minimum indentation (first line doesn't count):
-    indent = sys.maxint
+    indent = sys.maxsize
     for line in lines[1:]:
         stripped = line.lstrip()
         if stripped:
             indent = min(indent, len(line) - len(stripped))
     # Remove indentation (first line is special):
     trimmed = [lines[0].strip()]
-    if indent < sys.maxint:
+    if indent < sys.maxsize:
         for line in lines[1:]:
             trimmed.append(line[indent:].rstrip())
     # Strip off trailing and leading blank lines:

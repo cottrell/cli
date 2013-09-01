@@ -98,7 +98,7 @@ class TestCommandLineApp(tests.AppTest):
         status = None
         try:
             self.runapp(Test, "test -V", version="1.0")
-        except Abort, e:
+        except Abort as e:
             status = e.status
         self.assertEqual(status, 0)
 

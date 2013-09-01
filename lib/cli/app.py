@@ -29,15 +29,21 @@ __todo__ = """\
 import os
 import sys
 
-from cli._ext import argparse
+try:
+    import argparse
+except ImportError:
+    from cli._ext import argparse
 from cli.util import ifelse, ismethodof
 
 __all__ = ["Application", "CommandLineApp", "CommandLineMixin"]
 
+
 class Error(Exception):
     pass
 
+
 class Abort(Error):
+
     """Raised when an application exits unexpectedly.
 
     :class:`Abort` takes a single integer argument indicating the exit status of
@@ -51,9 +57,11 @@ class Abort(Error):
         message = "Application terminated (%s)" % self.status
         super(Abort, self).__init__(message, self.status)
 
+
 class Application(object):
+
     """An application.
-    
+
     :class:`Application` constructors should always be called with
     keyword arguments, though the *main* argument may be passed
     positionally (as when :class:`Application` or its subclasses are
@@ -75,7 +83,7 @@ class Application(object):
     *exit_after_main* determines whether the application will call
     :func:`sys.exit` after :attr:`main` completes.
 
-    *stdin*, *stderr* and *stdout* are file objects that represent the 
+    *stdin*, *stderr* and *stdout* are file objects that represent the
     usual application input and outputs. If they are ``None``, they will
     be replaced with :data:`sys.stdin`, :data:`sys.stderr` and
     :data:`sys.stdout`, respectively.
@@ -106,8 +114,8 @@ class Application(object):
     main = None
 
     def __init__(self, main=None, name=None, exit_after_main=True, stdin=None, stdout=None,
-            stderr=None, version=None, description=None, argv=None,
-            profiler=None, reraise=(Exception,), **kwargs):
+                 stderr=None, version=None, description=None, argv=None,
+                 profiler=None, reraise=(Exception,), **kwargs):
         self._name = name
         self.exit_after_main = exit_after_main
         self.stdin = stdin and stdin or sys.stdin
@@ -121,7 +129,7 @@ class Application(object):
 
         self.profiler = profiler
         self.reraise = reraise
-        
+
         if main is not None:
             self.main = main
 
@@ -130,15 +138,15 @@ class Application(object):
 
     def __call__(self, main):
         """Wrap the *main* callable and return an :class:`Application` instance.
-    
+
         This method is useful when it is necessary to pass keyword
         arguments to the :class:`Application` constructor when
         decorating callables. For example::
-    
+
             @cli.Application(stderr=None)
             def foo(app):
                 pass
-    
+
         In this case, :meth:`setup` will occur during :meth:`__call__`,
         not when the :class:`Application` is first constructed.
         """
@@ -211,13 +219,13 @@ class Application(object):
             returned = returned.status
         elif isinstance(returned, self.reraise):
             # raising the last exception preserves traceback
-            raise
+            raise(returned)
         else:
             try:
                 returned = int(returned)
             except:
                 returned = 1
-            
+
         if self.exit_after_main:
             sys.exit(returned)
         else:
@@ -239,12 +247,14 @@ class Application(object):
             args = ()
         try:
             returned = self.main(*args)
-        except Exception, e:
+        except Exception as e:
             returned = e
 
         return self.post_run(returned)
 
+
 class ArgumentParser(argparse.ArgumentParser):
+
     """This subclass makes it easier to test ArgumentParser.
 
     Unwrapped, :class:`argparse.ArgumentParser` checks the sys module for
@@ -274,7 +284,7 @@ class ArgumentParser(argparse.ArgumentParser):
     def set_prog(self, value):
         self._prog = value
 
-    prog = property(get_prog, set_prog, doc= """\
+    prog = property(get_prog, set_prog, doc="""\
         Return or lookup the program's name.
 
         If :attr:`_prog` is None, returns the first element in the :attr:`argv`
@@ -297,21 +307,23 @@ class ArgumentParser(argparse.ArgumentParser):
         if file is None:    # pragma: no cover
             file = self.stdout
         if message:
-            message = unicode(message)
+            message = str(message)
         super(ArgumentParser, self)._print_message(message, file)
 
     def exit(self, status=0, message=None):
         """If *message* is not None, write it to :attr:`stderr` instead of :data:`sys.stderr`."""
         if message:
-            self.stderr.write(unicode(message))
+            self.stderr.write(str(message))
         super(ArgumentParser, self).exit(status, message=None)
 
     def error(self, message):
         """Write *message* to :attr:`stderr` instead of :data:`sys.stderr`."""
         self.print_usage(self.stderr)
-        self.exit(2, u"%s: error: %s\n" % (self.prog, message))
+        self.exit(2, "%s: error: %s\n" % (self.prog, message))
+
 
 class CommandLineMixin(object):
+
     """A command line application.
 
     Command line applications extend the basic :class:`Application`
@@ -331,7 +343,8 @@ class CommandLineMixin(object):
     """
     prefix = '-'
     argparser_factory = ArgumentParser
-    formatter = argparse.HelpFormatter
+    # formatter = argparse.HelpFormatter
+    formatter = argparse.ArgumentDefaultsHelpFormatter
 
     params = None
     """The :attr:`params` attribute is an object with attributes
@@ -341,11 +354,13 @@ class CommandLineMixin(object):
     relied upon.
     """
 
-    def __init__(self, usage=None, epilog=None, **kwargs):
+    def __init__(self, usage=None, epilog=None, parse_known=False, **kwargs):
         self.usage = usage
         self.epilog = epilog
         self.actions = {}
         self.params = argparse.Namespace()
+        self.parse_known = parse_known
+        assert(type(self.parse_known) is bool)
 
     def setup(self):
         """Configure the :class:`CommandLineMixin`.
@@ -359,17 +374,18 @@ class CommandLineMixin(object):
             prog=self.name,
             usage=self.usage,
             description=self.description,
+            formatter_class=self.formatter,
             epilog=self.epilog,
             prefix_chars=self.prefix,
             argv=self.argv,
             stdout=self.stdout,
             stderr=self.stderr,
-            )
+        )
 
         # We add this ourselves to avoid clashing with -v/verbose.
         if self.version is not None:
             self.add_param(
-                "-V", "--version", action="version", 
+                "-V", "--version", action="version",
                 version=("%%(prog)s %s" % self.version),
                 help=("show program's version number and exit"))
 
@@ -398,7 +414,7 @@ class CommandLineMixin(object):
             keyword arguments and updated :attr:`params` itself. This is
             now left to the caller.
         """
-        for k, v in vars(newparams).items():
+        for k, v in list(vars(newparams).items()):
             setattr(params, k, v)
 
         return params
@@ -408,7 +424,7 @@ class CommandLineMixin(object):
 
         During :meth:`pre_run`, :class:`CommandLineMixin`
         calls :meth:`argparse.ArgumentParser.parse_args`. The results are
-        stored in :attr:`params`. 
+        stored in :attr:`params`.
 
         ..versionchanged:: 1.1.1
 
@@ -416,15 +432,21 @@ class CommandLineMixin(object):
         :attr:`exit_after_main` is not True, raise Abort instead.
         """
         try:
-            ns = self.argparser.parse_args()
-        except SystemExit, e:
+            self.unkown_args = None
+            if self.parse_known:
+                ns, self.unkown_args = self.argparser.parse_known_args()
+            else:
+                ns = self.argparser.parse_args()
+        except SystemExit as e:
             if self.exit_after_main:
                 raise
             else:
                 raise Abort(e.code)
         self.params = self.update_params(self.params, ns)
 
+
 class CommandLineApp(CommandLineMixin, Application):
+
     """A command line application.
 
     This class simply glues together the base :class:`Application` and
@@ -434,7 +456,7 @@ class CommandLineApp(CommandLineMixin, Application):
 
     Actual functionality moved to :class:`CommandLineMixin`.
     """
-    
+
     def __init__(self, main=None, **kwargs):
         CommandLineMixin.__init__(self, **kwargs)
         Application.__init__(self, main, **kwargs)

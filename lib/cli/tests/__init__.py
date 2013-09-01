@@ -25,8 +25,10 @@ except ImportError:
 from cli import test
 from cli.test import AppMixin
 
+
 class BaseTest(unittest.TestCase):
     pass
+
 
 class DecoratorTests(object):
 
@@ -48,6 +50,7 @@ class DecoratorTests(object):
 
     def test_wrap_non_function_callable(self):
         class foo(object):
+
             def __call__(self, app):
                 pass
         # Required in Python 2.4.
@@ -57,11 +60,12 @@ class DecoratorTests(object):
         setattr(foo, "__name__", "foo")
 
         self.assertEqual(foo.name, "foo")
-    
+
     def test_subclass(self):
         cls = self.app_cls
+
         class Test(cls):
-            
+
             def __init__(self, main=None, **kwargs):
                 cls.__init__(self, main, **kwargs)
                 self.exit_after_main = False
@@ -69,10 +73,11 @@ class DecoratorTests(object):
             def pre_run(self):
                 # Skip things like CLI parsing...
                 pass
-            
+
             def main(self):
                 return 0
         self.assertEqual(Test().run(), 0)
+
 
 class AppTest(DecoratorTests, AppMixin, BaseTest):
 

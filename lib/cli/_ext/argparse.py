@@ -108,7 +108,9 @@ _UNRECOGNIZED_ARGS_ATTR = '_unrecognized_args'
 # Utility functions and classes
 # =============================
 
+
 class _AttributeHolder(object):
+
     """Abstract base class that provides __repr__.
 
     The __repr__ method returns a string in the format::
@@ -144,6 +146,7 @@ def _ensure_value(namespace, name, value):
 # ===============
 
 class HelpFormatter(object):
+
     """Formatter for generating usage messages and argument help strings.
 
     Only the name of this class is considered a public API. All the methods
@@ -617,13 +620,14 @@ class HelpFormatter(object):
     def _fill_text(self, text, width, indent):
         text = self._whitespace_matcher.sub(' ', text).strip()
         return _textwrap.fill(text, width, initial_indent=indent,
-                                           subsequent_indent=indent)
+                              subsequent_indent=indent)
 
     def _get_help_string(self, action):
         return action.help
 
 
 class RawDescriptionHelpFormatter(HelpFormatter):
+
     """Help message formatter which retains any formatting in descriptions.
 
     Only the name of this class is considered a public API. All the methods
@@ -635,6 +639,7 @@ class RawDescriptionHelpFormatter(HelpFormatter):
 
 
 class RawTextHelpFormatter(RawDescriptionHelpFormatter):
+
     """Help message formatter which retains formatting of all help text.
 
     Only the name of this class is considered a public API. All the methods
@@ -646,6 +651,7 @@ class RawTextHelpFormatter(RawDescriptionHelpFormatter):
 
 
 class ArgumentDefaultsHelpFormatter(HelpFormatter):
+
     """Help message formatter which adds default values to argument help.
 
     Only the name of this class is considered a public API. All the methods
@@ -670,7 +676,7 @@ def _get_action_name(argument):
     if argument is None:
         return None
     elif argument.option_strings:
-        return  '/'.join(argument.option_strings)
+        return '/'.join(argument.option_strings)
     elif argument.metavar not in (None, SUPPRESS):
         return argument.metavar
     elif argument.dest not in (None, SUPPRESS):
@@ -680,6 +686,7 @@ def _get_action_name(argument):
 
 
 class ArgumentError(Exception):
+
     """An error from creating or using an argument (optional or positional).
 
     The string value of this exception is the message, augmented with
@@ -700,6 +707,7 @@ class ArgumentError(Exception):
 
 
 class ArgumentTypeError(Exception):
+
     """An error from trying to convert a command line string to a type."""
     pass
 
@@ -709,6 +717,7 @@ class ArgumentTypeError(Exception):
 # ==============
 
 class Action(_AttributeHolder):
+
     """Information about how to convert command line strings to Python objects.
 
     Action objects are used by an ArgumentParser to represent the information
@@ -1097,6 +1106,7 @@ class _SubParsersAction(Action):
 # ==============
 
 class FileType(object):
+
     """Factory for creating file object types
 
     Instances of FileType are typically passed as type= arguments to the
@@ -1139,7 +1149,9 @@ class FileType(object):
 # Optional and Positional Parsing
 # ===========================
 
+
 class Namespace(_AttributeHolder):
+
     """Simple object for storing attributes.
 
     Implements equality by attribute names and values, and provides a simple
@@ -1240,7 +1252,6 @@ class _ActionsContainer(object):
             if action.dest == dest and action.default is not None:
                 return action.default
         return self._defaults.get(dest, None)
-
 
     # =======================
     # Adding argument actions
@@ -1513,6 +1524,7 @@ class _MutuallyExclusiveGroup(_ArgumentGroup):
 
 
 class ArgumentParser(_AttributeHolder, _ActionsContainer):
+
     """Object for parsing command line strings into Python objects.
 
     Keyword Arguments:
@@ -1582,18 +1594,18 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
 
         # add help and version arguments if necessary
         # (using explicit default to override global argument_default)
-        if '-' in prefix_chars:        
+        if '-' in prefix_chars:
             default_prefix = '-'
         else:
             default_prefix = prefix_chars[0]
         if self.add_help:
             self.add_argument(
-                default_prefix+'h', default_prefix*2+'help',
+                default_prefix + 'h', default_prefix * 2 + 'help',
                 action='help', default=SUPPRESS,
                 help=_('show this help message and exit'))
         if self.version:
             self.add_argument(
-                default_prefix+'v', default_prefix*2+'version',
+                default_prefix + 'v', default_prefix * 2 + 'version',
                 action='version', default=SUPPRESS,
                 version=self.version,
                 help=_("show program's version number and exit"))
@@ -1699,7 +1711,7 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
                 if not hasattr(namespace, action.dest):
                     if action.default is not SUPPRESS:
                         default = action.default
-                        if isinstance(action.default, basestring):
+                        if isinstance(action.default, str):
                             default = self._get_value(action, default)
                         setattr(namespace, action.dest, default)
 
@@ -2053,7 +2065,7 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
         # if multiple actions match, the option string was ambiguous
         if len(option_tuples) > 1:
             options = ', '.join([option_string
-                for action, option_string, explicit_arg in option_tuples])
+                                 for action, option_string, explicit_arg in option_tuples])
             tup = arg_string, options
             self.error(_('ambiguous option: %s could match %s') % tup)
 
@@ -2177,7 +2189,7 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
                 value = action.const
             else:
                 value = action.default
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 value = self._get_value(action, value)
                 self._check_value(action, value)
 

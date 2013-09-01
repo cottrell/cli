@@ -33,7 +33,7 @@ __classifiers__ = [
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Environment :: Console",
     "Development Status :: 5 - Production/Stable",
-] 
+]
 __keywords__ = "command line application framework"
 
 __requires__ = []

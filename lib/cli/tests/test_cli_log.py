@@ -22,13 +22,15 @@ from cli.log import CommandLineLogger, LoggingApp
 
 from cli import tests
 
+
 class FakeLoggingApp(LoggingApp):
-    
+
     def main(self):
         pass
 
+
 class TestCommandLineLogger(tests.BaseTest):
-    
+
     def setUp(self):
         self.fakens = argparse.Namespace()
         self.logger = CommandLineLogger("foo")
@@ -62,6 +64,7 @@ class TestCommandLineLogger(tests.BaseTest):
         self.fakens.silent = True
         self.logger.setLevel(self.fakens)
         self.assertEqual(self.logger.level, logging.CRITICAL)
+
 
 class TestLoggingApp(tests.AppTest):
     app_cls = FakeLoggingApp

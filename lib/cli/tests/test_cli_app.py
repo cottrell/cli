@@ -20,19 +20,22 @@ from cli.util import StringIO
 
 from cli import tests
 
+
 class FakeApp(Application):
-    
+
     def main(self):
         pass
 
+
 class FakeCommandLineApp(CommandLineApp):
-    
+
     def main(self):
         pass
+
 
 class TestApplication(tests.AppTest):
     app_cls = FakeApp
-    
+
     def test_discover_name(self):
         self.assertEqual(self.app.name, "main")
 
@@ -77,14 +80,15 @@ class TestApplication(tests.AppTest):
 
         self.assertEqual(app.run(), 1)
 
-            
+
 class TestCommandLineApp(tests.AppTest):
     app_cls = FakeCommandLineApp
 
     def test_parse_args(self):
         app_cls = self.app_cls
+
         class Test(app_cls):
-            
+
             def setup(self):
                 app_cls.setup(self)
                 self.add_param("-f", "--foo", default=None)
@@ -93,12 +97,13 @@ class TestCommandLineApp(tests.AppTest):
         self.assertEqual(app.params.foo, "bar")
 
     def test_parse_args_version(self):
-        class Test(self.app_cls): pass
+        class Test(self.app_cls):
+            pass
 
         status = None
         try:
             self.runapp(Test, "test -V", version="1.0")
-        except Abort, e:
+        except Abort as e:
             status = e.status
         self.assertEqual(status, 0)
 

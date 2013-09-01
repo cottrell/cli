@@ -24,14 +24,15 @@ try:
     import io
     BaseStringIO = io.StringIO
 except (ImportError, AttributeError):
-    import StringIO
-    BaseStringIO = StringIO.StringIO
+    import io
+    BaseStringIO = io.StringIO
 
 
 class StringIO(BaseStringIO):
-    
+
     def write(self, s):
-        BaseStringIO.write(self, unicode(s))
+        BaseStringIO.write(self, str(s))
+
 
 def trim(string):
     """Trim whitespace from strings.
@@ -46,14 +47,14 @@ def trim(string):
     # and split into a list of lines:
     lines = string.expandtabs().splitlines()
     # Determine minimum indentation (first line doesn't count):
-    indent = sys.maxint
+    indent = sys.maxsize
     for line in lines[1:]:
         stripped = line.lstrip()
         if stripped:
             indent = min(indent, len(line) - len(stripped))
     # Remove indentation (first line is special):
     trimmed = [lines[0].strip()]
-    if indent < sys.maxint:
+    if indent < sys.maxsize:
         for line in lines[1:]:
             trimmed.append(line[indent:].rstrip())
     # Strip off trailing and leading blank lines:
@@ -63,6 +64,7 @@ def trim(string):
         trimmed.pop(0)
     # Return a single string:
     return '\n'.join(trimmed) + "\n"
+
 
 def ifelse(a, predicate, b):
     """Return *a* if *predicate* evaluates to True; else *b*.
@@ -75,6 +77,7 @@ def ifelse(a, predicate, b):
     else:
         return b
 
+
 def ismethodof(method, obj):
     """Return True if *method* is a method of *obj*.
 
@@ -84,5 +87,5 @@ def ismethodof(method, obj):
     # Check for both 'im_self' (Python < 3.0) and '__self__' (Python >= 3.0).
     cls = obj.__class__
     mainobj = getattr(method, "im_self",
-        getattr(method, "__self__", None))
+                      getattr(method, "__self__", None))
     return isinstance(mainobj, cls)

@@ -34,7 +34,9 @@ from cli.log import LoggingMixin
 
 __all__ = ["DaemonizingApp", "DaemonizingMixin"]
 
+
 class DaemonizingMixin(object):
+
     """A command-line application that knows how to daemonize.
 
     The :class:`DaemonizingMixin` requires the :class:`cli.log.LoggingMixin`
@@ -68,11 +70,11 @@ class DaemonizingMixin(object):
         """
         # Add daemonizing options.
         self.add_param("-d", "--daemonize", default=False, action="store_true",
-                help="run the application in the background")
-        self.add_param("-u", "--user", default=None, 
-                help="change to USER[:GROUP] after daemonizing")
-        self.add_param("-p", "--pidfile", default=None, 
-                help="write PID to PIDFILE after daemonizing")
+                       help="run the application in the background")
+        self.add_param("-u", "--user", default=None,
+                       help="change to USER[:GROUP] after daemonizing")
+        self.add_param("-p", "--pidfile", default=None,
+                       help="write PID to PIDFILE after daemonizing")
 
     def daemonize(self):
         """Run in the background.
@@ -83,10 +85,12 @@ class DaemonizingMixin(object):
         file and, if requested on the command line, writes its PID to a
         file and changes user/group.
         """
-        if os.fork(): sys.exit(0)
-        os.umask(0) 
-        os.setsid() 
-        if os.fork(): sys.exit(0)
+        if os.fork():
+            sys.exit(0)
+        os.umask(0)
+        os.setsid()
+        if os.fork():
+            sys.exit(0)
 
         self.stdout.flush()
         self.stderr.flush()
@@ -122,8 +126,10 @@ class DaemonizingMixin(object):
 
         return True
 
+
 class DaemonizingApp(
-    DaemonizingMixin, LoggingMixin, CommandLineMixin, Application):
+        DaemonizingMixin, LoggingMixin, CommandLineMixin, Application):
+
     """A daemonizing application.
 
     This class simply glues together the base :class:`Application`,

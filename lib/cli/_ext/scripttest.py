@@ -11,6 +11,8 @@ import subprocess
 import re
 
 # From pathutils by Michael Foord: http://www.voidspace.org.uk/python/pathutils.html
+
+
 def onerror(func, path, exc_info):
     """
     Error handler for ``shutil.rmtree``.
@@ -32,6 +34,7 @@ def onerror(func, path, exc_info):
         raise
 
 __all__ = ['TestFileEnvironment']
+
 
 class TestFileEnvironment(object):
 
@@ -84,7 +87,7 @@ class TestFileEnvironment(object):
         if script_path is None:
             if sys.platform == 'win32':
                 script_path = environ.get('PATH', '').split(';')
-            else:       
+            else:
                 script_path = environ.get('PATH', '').split(':')
         self.script_path = script_path
         if cwd is None:
@@ -98,7 +101,7 @@ class TestFileEnvironment(object):
         self.ignore_hidden = ignore_hidden
 
     def _guess_base_path(self, stack_level):
-        frame = sys._getframe(stack_level+1)
+        frame = sys._getframe(stack_level + 1)
         file = frame.f_globals.get('__file__')
         if not file:
             raise TypeError(
@@ -135,9 +138,9 @@ class TestFileEnvironment(object):
         cwd = _popget(kw, 'cwd', self.cwd)
         stdin = _popget(kw, 'stdin', None)
         quiet = _popget(kw, 'quiet', False)
-        args = map(str, args)
+        args = list(map(str, args))
         assert not kw, (
-            "Arguments not expected: %s" % ', '.join(kw.keys()))
+            "Arguments not expected: %s" % ', '.join(list(kw.keys())))
         if ' ' in script:
             assert not args, (
                 "You cannot give a multi-argument script (%r) "
@@ -216,9 +219,10 @@ class TestFileEnvironment(object):
         marker_file = os.path.join(self.base_path, '.scripttest-test-dir.txt')
         if os.path.exists(self.base_path):
             if not force and not os.path.exists(marker_file):
-                print >> sys.stderr, 'The directory %s does not appear to have been created by ScriptTest' % self.base_path
-                print >> sys.stderr, 'The directory %s must be a scratch directory; it will be wiped after every test run' % self.base_path
-                print >> sys.stderr, 'Please delete this directory manually'
+                sys.stderr.write('The directory %s does not appear to have been created by ScriptTest' % self.base_path)
+                sys.stderr.write('The directory %s does not appear to have been created by ScriptTest' % self.base_path)
+                sys.stderr.write('The directory %s must be a scratch directory; it will be wiped after every test run' % self.base_path)
+                sys.stderr.write('Please delete this directory manually')
                 raise AssertionError(
                     "The directory %s was not created by ScriptTest; it must be deleted manually" % self.base_path)
             shutil.rmtree(self.base_path, onerror=onerror)
@@ -248,6 +252,7 @@ class TestFileEnvironment(object):
             f2.close()
         f.close()
         return FoundFile(self.base_path, path)
+
 
 class ProcResult(object):
 
@@ -283,7 +288,7 @@ class ProcResult(object):
         self.files_deleted = {}
         self.files_updated = {}
         self.files_created = files_after.copy()
-        for path, f in files_before.items():
+        for path, f in list(files_before.items()):
             if path not in files_after:
                 self.files_deleted[path] = f
                 continue
@@ -295,7 +300,7 @@ class ProcResult(object):
         __tracebackhide__ = True
         if self.returncode != 0:
             if not quiet:
-                print self
+                print(self)
             raise AssertionError(
                 "Script returned code: %s" % self.returncode)
 
@@ -303,10 +308,10 @@ class ProcResult(object):
         __tracebackhide__ = True
         if self.stderr:
             if not quiet:
-                print self
+                print(self)
             else:
-                print 'Error output:'
-                print self.stderr
+                print('Error output:')
+                print(self.stderr)
             raise AssertionError("stderr output not expected")
 
     def wildcard_matches(self, wildcard):
@@ -349,7 +354,7 @@ class ProcResult(object):
             ('updated', self.files_updated, True)]:
             if files:
                 s.append('-- %s: -------------------' % name)
-                files = files.items()
+                files = list(files.items())
                 files.sort()
                 last = ''
                 for path, f in files:
@@ -360,6 +365,7 @@ class ProcResult(object):
                         t += '  (%s bytes)' % f.size
                     s.append(t)
         return '\n'.join(s)
+
 
 class FoundFile(object):
 
@@ -418,14 +424,15 @@ class FoundFile(object):
         __tracebackhide__ = True
         bytes = self.bytes
         if s not in bytes:
-            print 'Could not find %r in:' % s
-            print bytes
+            print('Could not find %r in:' % s)
+            print(bytes)
             assert s in bytes
 
     def __repr__(self):
         return '<%s %s:%s>' % (
             self.__class__.__name__,
             self.base_path, self.path)
+
 
 class FoundDir(object):
 
@@ -449,6 +456,7 @@ class FoundDir(object):
             self.__class__.__name__,
             self.base_path, self.path)
 
+
 def _popget(d, key, default=None):
     """
     Pop the key if found (else return default)
@@ -456,6 +464,7 @@ def _popget(d, key, default=None):
     if key in d:
         return d.pop(key)
     return default
+
 
 def _space_prefix(pref, full, sep=None, indent=None, include_sep=True):
     """

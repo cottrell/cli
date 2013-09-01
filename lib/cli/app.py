@@ -29,7 +29,10 @@ __todo__ = """\
 import os
 import sys
 
-from cli._ext import argparse
+try:
+    import argparse
+except ImportError:
+    from cli._ext import argparse
 from cli.util import ifelse, ismethodof
 
 __all__ = ["Application", "CommandLineApp", "CommandLineMixin"]

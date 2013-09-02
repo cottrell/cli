@@ -56,7 +56,7 @@ class Abort(Error):
 
 class Application(object):
     """An application.
-    
+
     :class:`Application` constructors should always be called with
     keyword arguments, though the *main* argument may be passed
     positionally (as when :class:`Application` or its subclasses are
@@ -78,7 +78,7 @@ class Application(object):
     *exit_after_main* determines whether the application will call
     :func:`sys.exit` after :attr:`main` completes.
 
-    *stdin*, *stderr* and *stdout* are file objects that represent the 
+    *stdin*, *stderr* and *stdout* are file objects that represent the
     usual application input and outputs. If they are ``None``, they will
     be replaced with :data:`sys.stdin`, :data:`sys.stderr` and
     :data:`sys.stdout`, respectively.
@@ -124,7 +124,7 @@ class Application(object):
 
         self.profiler = profiler
         self.reraise = reraise
-        
+
         if main is not None:
             self.main = main
 
@@ -133,15 +133,15 @@ class Application(object):
 
     def __call__(self, main):
         """Wrap the *main* callable and return an :class:`Application` instance.
-    
+
         This method is useful when it is necessary to pass keyword
         arguments to the :class:`Application` constructor when
         decorating callables. For example::
-    
+
             @cli.Application(stderr=None)
             def foo(app):
                 pass
-    
+
         In this case, :meth:`setup` will occur during :meth:`__call__`,
         not when the :class:`Application` is first constructed.
         """
@@ -214,13 +214,13 @@ class Application(object):
             returned = returned.status
         elif isinstance(returned, self.reraise):
             # raising the last exception preserves traceback
-            raise
+            raise(returned)
         else:
             try:
                 returned = int(returned)
             except:
                 returned = 1
-            
+
         if self.exit_after_main:
             sys.exit(returned)
         else:
@@ -344,11 +344,13 @@ class CommandLineMixin(object):
     relied upon.
     """
 
-    def __init__(self, usage=None, epilog=None, **kwargs):
+    def __init__(self, usage=None, epilog=None, parse_known=False, **kwargs):
         self.usage = usage
         self.epilog = epilog
         self.actions = {}
         self.params = argparse.Namespace()
+        self.parse_known = parse_known
+        assert(type(self.parse_known) is bool)
 
     def setup(self):
         """Configure the :class:`CommandLineMixin`.
@@ -372,7 +374,7 @@ class CommandLineMixin(object):
         # We add this ourselves to avoid clashing with -v/verbose.
         if self.version is not None:
             self.add_param(
-                "-V", "--version", action="version", 
+                "-V", "--version", action="version",
                 version=("%%(prog)s %s" % self.version),
                 help=("show program's version number and exit"))
 
@@ -411,7 +413,7 @@ class CommandLineMixin(object):
 
         During :meth:`pre_run`, :class:`CommandLineMixin`
         calls :meth:`argparse.ArgumentParser.parse_args`. The results are
-        stored in :attr:`params`. 
+        stored in :attr:`params`.
 
         ..versionchanged:: 1.1.1
 
@@ -419,7 +421,11 @@ class CommandLineMixin(object):
         :attr:`exit_after_main` is not True, raise Abort instead.
         """
         try:
-            ns = self.argparser.parse_args()
+            self.unkown_args = None
+            if self.parse_known:
+                ns, self.unkown_args = self.argparser.parse_known_args()
+            else:
+                ns = self.argparser.parse_args()
         except SystemExit as e:
             if self.exit_after_main:
                 raise
@@ -437,7 +443,7 @@ class CommandLineApp(CommandLineMixin, Application):
 
     Actual functionality moved to :class:`CommandLineMixin`.
     """
-    
+
     def __init__(self, main=None, **kwargs):
         CommandLineMixin.__init__(self, **kwargs)
         Application.__init__(self, main, **kwargs)

@@ -334,7 +334,8 @@ class CommandLineMixin(object):
     """
     prefix = '-'
     argparser_factory = ArgumentParser
-    formatter = argparse.HelpFormatter
+    # formatter = argparse.HelpFormatter
+    formatter = argparse.ArgumentDefaultsHelpFormatter
 
     params = None
     """The :attr:`params` attribute is an object with attributes
@@ -364,6 +365,7 @@ class CommandLineMixin(object):
             prog=self.name,
             usage=self.usage,
             description=self.description,
+            formatter_class=self.formatter,
             epilog=self.epilog,
             prefix_chars=self.prefix,
             argv=self.argv,

@@ -1,5 +1,8 @@
 import logging
 
+def f(a, *args):
+    print(locals())
+
 def f0():
     """ a function no args """
     print('f0')

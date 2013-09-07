@@ -28,6 +28,7 @@ import pstats
 
 __all__ = ["Profiler", "Stats", "fmtsec"]
 
+
 class update_wrapper(object):
     assignments = ('__module__', '__name__', '__doc__')
     updates = ('__dict__',)
@@ -42,10 +43,11 @@ class update_wrapper(object):
             setattr(wrapper, attr, getattr(wrapped, attr))
         for attr in self.updates:
             getattr(wrapper, attr).update(getattr(wrapper, attr, {}))
-    
+
         return wrapper
 
 update_wrapper = update_wrapper()
+
 
 def fmtsec(seconds):
     if seconds < 0:
@@ -83,21 +85,23 @@ def fmtsec(seconds):
 
 # pstats.Stats doesn't know how to write to a stream in Python<2.5, so wrap it.
 class StatsWrapper(pstats.Stats):
+
     """Teach Stats how to output to a configurable stream.
 
     Makes 2.4 Stats compatible with the >=2.5 API.
     """
-    
+
     def __init__(self, *args, **kwargs):
         self.stream = kwargs.get("stream", sys.stdout)
         arg = args[0]
         pstats.Stats.__init__(self, *args)
-    
+
 Stats = pstats.Stats
 if getattr(pstats, "sys", None) is None:
     for name, meth in list(vars(StatsWrapper).items()):
         if name != "init" or "print" not in name:
             continue
+
         def wrapper(self, *args, **kwargs):
             oldstdout = sys.stdout
             sys.stdout = self.stream
@@ -110,7 +114,9 @@ if getattr(pstats, "sys", None) is None:
         setattr(StatsWrapper, name, update_wrapper(wrapper, meth))
     Stats = StatsWrapper
 
+
 class Profiler(object):
+
     """A profiling tool.
 
     The :class:`Profiler` provides two decorator methods which can help
@@ -192,7 +198,7 @@ class Profiler(object):
 
         try:
             from cProfile import Profile
-        except ImportError: # pragma: no cover
+        except ImportError:  # pragma: no cover
             from profile import Profile
         profiler = Profile()
 
@@ -219,7 +225,7 @@ class Profiler(object):
         """
         try:
             from timeit import default_timer as timer
-        except ImportError: # pragma: no cover
+        except ImportError:  # pragma: no cover
             from time import time as timer
 
         def timeit(func, *args, **kwargs):
@@ -239,7 +245,7 @@ class Profiler(object):
             self.stdout.write("===> Profiling %s: " % func.__name__)
             self.result = min(repeat(func, *args, **kwargs))
             self.stdout.write("%d loops, best of %d: %s per loop\n" % (
-                self.count, self.repeat, fmtsec(self.result/self.count)))
+                self.count, self.repeat, fmtsec(self.result / self.count)))
 
         return self.wrap(wrapper, func)
 

@@ -8,6 +8,7 @@ import site
 import re
 import logging
 
+
 def main():
     stripped_argv = [x for x in sys.argv if not x.startswith('-')]
     other_argv = [x for x in sys.argv if x not in stripped_argv]
@@ -25,7 +26,7 @@ def main():
         sys.exit(1)
 
     fname = stripped_argv[2]
-    sys.argv = stripped_argv[2:] + other_argv # shift but be careful with the options
+    sys.argv = stripped_argv[2:] + other_argv  # shift but be careful with the options
     # funs is a list of (func_name, func_ref) tuples
     funs = [x for x in funs if not x[0].startswith('_')]
 
@@ -89,6 +90,7 @@ def main():
         prog.add_param('--kwargs', help="Will parse any optional arguments from the command line and pass as **kwargs to function.", default=None)
 
     prog.run()
+
 
 def usage(funs):
     lines = ''

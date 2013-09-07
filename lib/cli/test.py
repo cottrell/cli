@@ -42,7 +42,9 @@ from cli.util import StringIO, trim
 
 __all__ = ["AppTest", "FunctionalTest"]
 
+
 class AppTest(unittest.TestCase):
+
     """An application test, based on :class:`unittest.TestCase`.
 
     :class:`AppTest` provides a simple :meth:`setUp` method
@@ -76,6 +78,7 @@ class AppTest(unittest.TestCase):
         """
         kwargs = self.default_kwargs.copy()
         kwargs.update(getattr(self, "kwargs", {}))
+
         @self.app_cls(**kwargs)
         def app(app):
             pass
@@ -86,7 +89,9 @@ class AppTest(unittest.TestCase):
         _kwargs.update(kwargs)
         self.app_cls(**kwargs)
 
+
 class AppMixin(object):
+
     """Useful methods for testing App classes.
 
     Note: This won't help for testing App _instances_.
@@ -129,7 +134,7 @@ class AppMixin(object):
         return status, app
 
     def assertAppDoes(self, app_cls, cmd, kwargs={}, stdout='', stderr='', status=0,
-            raises=(), trim_output=trim):
+                      raises=(), trim_output=trim):
         """Fail the test if the app behaves unexpectedly.
 
         *app_cls*, *cmd* and *kwargs* will be passed to :meth:`runapp`. If the
@@ -162,7 +167,9 @@ class AppMixin(object):
 
         raise self.failureException("Abort not raised")
 
+
 class FunctionalTest(unittest.TestCase):
+
     """A functional test, also based on :class:`unittest.TestCase`.
 
     Functional tests monitor an application's 'macro' behavior, making
@@ -241,8 +248,8 @@ class FunctionalTest(unittest.TestCase):
         if trim_output:
             stdout, stderr = trim(stdout), trim(stderr)
         self.assertEqual(returncode, result.returncode,
-            "expected returncode %d, got %d" % (returncode, result.returncode))
+                         "expected returncode %d, got %d" % (returncode, result.returncode))
         self.assertEqual(result.stdout, stdout,
-            "unexpected output on stdout")
+                         "unexpected output on stdout")
         self.assertEqual(result.stderr, stderr,
-            "unexpected output on stderr")
+                         "unexpected output on stderr")

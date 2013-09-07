@@ -20,19 +20,21 @@ from cli.util import StringIO
 
 from cli import tests
 
+
 class TestProfiler(tests.BaseTest):
 
     def setUp(self):
         self.stdout = StringIO()
         self.profiler = Profiler(stdout=self.stdout)
+
         def func():
             """foo"""
             return "foo"
+
         def wrapper(*args, **kwargs):
             return func()
         self.func = func
         self.wrapper = wrapper
-
 
     def test_wrap(self):
         wrapped = self.profiler.wrap(self.wrapper, self.func)
@@ -60,12 +62,14 @@ class TestProfiler(tests.BaseTest):
             pass
         foo()
 
+
 class TestUtils(tests.BaseTest):
-    
+
     def test_update_wrapper(self):
         def foo():
             """foo"""
             return "foo"
+
         def wrapper():
             """wrapper"""
             return foo()

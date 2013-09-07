@@ -29,9 +29,10 @@ except (ImportError, AttributeError):
 
 
 class StringIO(BaseStringIO):
-    
+
     def write(self, s):
         BaseStringIO.write(self, str(s))
+
 
 def trim(string):
     """Trim whitespace from strings.
@@ -64,6 +65,7 @@ def trim(string):
     # Return a single string:
     return '\n'.join(trimmed) + "\n"
 
+
 def ifelse(a, predicate, b):
     """Return *a* if *predicate* evaluates to True; else *b*.
 
@@ -75,6 +77,7 @@ def ifelse(a, predicate, b):
     else:
         return b
 
+
 def ismethodof(method, obj):
     """Return True if *method* is a method of *obj*.
 
@@ -84,5 +87,5 @@ def ismethodof(method, obj):
     # Check for both 'im_self' (Python < 3.0) and '__self__' (Python >= 3.0).
     cls = obj.__class__
     mainobj = getattr(method, "im_self",
-        getattr(method, "__self__", None))
+                      getattr(method, "__self__", None))
     return isinstance(mainobj, cls)

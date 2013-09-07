@@ -11,6 +11,8 @@ import subprocess
 import re
 
 # From pathutils by Michael Foord: http://www.voidspace.org.uk/python/pathutils.html
+
+
 def onerror(func, path, exc_info):
     """
     Error handler for ``shutil.rmtree``.
@@ -32,6 +34,7 @@ def onerror(func, path, exc_info):
         raise
 
 __all__ = ['TestFileEnvironment']
+
 
 class TestFileEnvironment(object):
 
@@ -84,7 +87,7 @@ class TestFileEnvironment(object):
         if script_path is None:
             if sys.platform == 'win32':
                 script_path = environ.get('PATH', '').split(';')
-            else:       
+            else:
                 script_path = environ.get('PATH', '').split(':')
         self.script_path = script_path
         if cwd is None:
@@ -98,7 +101,7 @@ class TestFileEnvironment(object):
         self.ignore_hidden = ignore_hidden
 
     def _guess_base_path(self, stack_level):
-        frame = sys._getframe(stack_level+1)
+        frame = sys._getframe(stack_level + 1)
         file = frame.f_globals.get('__file__')
         if not file:
             raise TypeError(
@@ -250,6 +253,7 @@ class TestFileEnvironment(object):
         f.close()
         return FoundFile(self.base_path, path)
 
+
 class ProcResult(object):
 
     """
@@ -362,6 +366,7 @@ class ProcResult(object):
                     s.append(t)
         return '\n'.join(s)
 
+
 class FoundFile(object):
 
     """
@@ -428,6 +433,7 @@ class FoundFile(object):
             self.__class__.__name__,
             self.base_path, self.path)
 
+
 class FoundDir(object):
 
     """
@@ -450,6 +456,7 @@ class FoundDir(object):
             self.__class__.__name__,
             self.base_path, self.path)
 
+
 def _popget(d, key, default=None):
     """
     Pop the key if found (else return default)
@@ -457,6 +464,7 @@ def _popget(d, key, default=None):
     if key in d:
         return d.pop(key)
     return default
+
 
 def _space_prefix(pref, full, sep=None, indent=None, include_sep=True):
     """

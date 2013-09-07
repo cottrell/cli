@@ -37,10 +37,13 @@ from cli.util import ifelse, ismethodof
 
 __all__ = ["Application", "CommandLineApp", "CommandLineMixin"]
 
+
 class Error(Exception):
     pass
 
+
 class Abort(Error):
+
     """Raised when an application exits unexpectedly.
 
     :class:`Abort` takes a single integer argument indicating the exit status of
@@ -54,7 +57,9 @@ class Abort(Error):
         message = "Application terminated (%s)" % self.status
         super(Abort, self).__init__(message, self.status)
 
+
 class Application(object):
+
     """An application.
 
     :class:`Application` constructors should always be called with
@@ -109,8 +114,8 @@ class Application(object):
     main = None
 
     def __init__(self, main=None, name=None, exit_after_main=True, stdin=None, stdout=None,
-            stderr=None, version=None, description=None, argv=None,
-            profiler=None, reraise=(Exception,), **kwargs):
+                 stderr=None, version=None, description=None, argv=None,
+                 profiler=None, reraise=(Exception,), **kwargs):
         self._name = name
         self.exit_after_main = exit_after_main
         self.stdin = stdin and stdin or sys.stdin
@@ -247,7 +252,9 @@ class Application(object):
 
         return self.post_run(returned)
 
+
 class ArgumentParser(argparse.ArgumentParser):
+
     """This subclass makes it easier to test ArgumentParser.
 
     Unwrapped, :class:`argparse.ArgumentParser` checks the sys module for
@@ -277,7 +284,7 @@ class ArgumentParser(argparse.ArgumentParser):
     def set_prog(self, value):
         self._prog = value
 
-    prog = property(get_prog, set_prog, doc= """\
+    prog = property(get_prog, set_prog, doc="""\
         Return or lookup the program's name.
 
         If :attr:`_prog` is None, returns the first element in the :attr:`argv`
@@ -314,7 +321,9 @@ class ArgumentParser(argparse.ArgumentParser):
         self.print_usage(self.stderr)
         self.exit(2, "%s: error: %s\n" % (self.prog, message))
 
+
 class CommandLineMixin(object):
+
     """A command line application.
 
     Command line applications extend the basic :class:`Application`
@@ -371,7 +380,7 @@ class CommandLineMixin(object):
             argv=self.argv,
             stdout=self.stdout,
             stderr=self.stderr,
-            )
+        )
 
         # We add this ourselves to avoid clashing with -v/verbose.
         if self.version is not None:
@@ -435,7 +444,9 @@ class CommandLineMixin(object):
                 raise Abort(e.code)
         self.params = self.update_params(self.params, ns)
 
+
 class CommandLineApp(CommandLineMixin, Application):
+
     """A command line application.
 
     This class simply glues together the base :class:`Application` and

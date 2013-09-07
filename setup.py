@@ -10,7 +10,8 @@ try:
 except ImportError:
     from distutils.command.build_py import build_py
 
-import sys, os
+import sys
+import os
 
 libdir = "lib"
 
@@ -37,7 +38,7 @@ setup_options = {
         # -*- Entry points: -*-
     """,
     "test_suite": "cli.tests",
-    "cmdclass": { "build_py": build_py },
+    "cmdclass": {"build_py": build_py},
 }
 
 setup(**setup_options)

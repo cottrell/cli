@@ -19,10 +19,12 @@ from cli.daemon import DaemonizingApp
 
 from cli import tests
 
+
 class FakeDaemonizingApp(DaemonizingApp):
-    
+
     def main(self):
         pass
+
 
 class TestDaemonizingApp(tests.AppTest):
     app_cls = FakeDaemonizingApp

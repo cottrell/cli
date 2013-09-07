@@ -34,6 +34,7 @@ __all__ = ["LoggingApp", "LoggingMixin", "CommandLineLogger"]
 # Silence multiprocessing errors.
 logging.logMultiprocessing = 0
 
+
 class FileHandler(logging.FileHandler):
 
     def close(self):
@@ -45,7 +46,9 @@ class FileHandler(logging.FileHandler):
         """
         pass    # pragma: no cover
 
+
 class NullHandler(logging.Handler):
+
     """A blackhole handler.
 
     NullHandler simply ignores all messages it receives.
@@ -55,7 +58,9 @@ class NullHandler(logging.Handler):
         """Ignore the record."""
         pass
 
+
 class CommandLineLogger(logging.Logger):
+
     """Provide extra configuration smarts for loggers.
 
     In addition to the powers of a regular logger, a
@@ -98,7 +103,9 @@ class CommandLineLogger(logging.Logger):
 
         self.level = level
 
+
 class LoggingMixin(object):
+
     """A mixin for command-line applications that knows how to log.
 
     The :class:`LoggingMixin` requires :class:`cli.app.CommandLineMixin`
@@ -124,8 +131,8 @@ class LoggingMixin(object):
     """
 
     def __init__(self, stream=sys.stdout, logfile=None,
-            message_format="%(asctime)s %(message)s", 
-            date_format="%Y-%m-%dT%H:%M:%S", root=True, **kwargs):
+                 message_format="%(asctime)s %(message)s",
+                 date_format="%Y-%m-%dT%H:%M:%S", root=True, **kwargs):
         self.logfile = logfile
         self.stream = stream
         self.message_format = message_format
@@ -140,14 +147,14 @@ class LoggingMixin(object):
         application and instantiates the :attr:`log` attribute.
         """
         # Add logging-related options.
-        self.add_param("-l", "--logfile", default=self.logfile, 
-                help="log to file (default: log to stdout)")
+        self.add_param("-l", "--logfile", default=self.logfile,
+                       help="log to file (default: log to stdout)")
         self.add_param("-q", "--quiet", default=0, help="decrease the verbosity",
-                action="count")
+                       action="count")
         self.add_param("-s", "--silent", default=False, help="only log warnings",
-                action="store_true")
+                       action="store_true")
         self.add_param("-v", "--verbose", default=0, help="raise the verbosity",
-                action="count")
+                       action="count")
 
         # Create logger.
         logging.setLoggerClass(CommandLineLogger)
@@ -181,7 +188,7 @@ class LoggingMixin(object):
         self.log.handlers = []
         if self.params.logfile is not None:
             file_handler = FileHandler(self.params.logfile)
-            file_handler.setFormatter(self.formatter) # pragma: no cover
+            file_handler.setFormatter(self.formatter)  # pragma: no cover
             self.log.addHandler(file_handler)
         elif self.stream is not None:
             stream_handler = StreamHandler(self.stream)
@@ -192,7 +199,9 @@ class LoggingMixin(object):
         if not self.log.handlers:
             self.log.addHandler(NullHandler())
 
+
 class LoggingApp(LoggingMixin, CommandLineMixin, Application):
+
     """A logging application.
 
     This class simply glues together the base :class:`Application`,
@@ -201,7 +210,7 @@ class LoggingApp(LoggingMixin, CommandLineMixin, Application):
     .. versionchanged:: 1.0.4
         Actual functionality moved to :class:`LoggingMixin`.
     """
-    
+
     def __init__(self, main=None, **kwargs):
         CommandLineMixin.__init__(self, **kwargs)
         LoggingMixin.__init__(self, **kwargs)

@@ -10,6 +10,7 @@ import logging
 
 def main():
     stripped_argv = [x for x in sys.argv if not x.startswith('-')]
+    other_argv = [x for x in sys.argv if x not in stripped_argv]
     if len(stripped_argv) < 2:
         print('usage: clirun.py module.py ...')
         sys.exit(1)
@@ -24,8 +25,7 @@ def main():
         sys.exit(1)
 
     fname = stripped_argv[2]
-    sys.argv.pop(fullModName)
-    print(sys.argv)
+    sys.argv = stripped_argv[2:] + other_argv # shift but be careful with the options
     # funs is a list of (func_name, func_ref) tuples
     funs = [x for x in funs if not x[0].startswith('_')]
 
